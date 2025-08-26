@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0-patched] (Unreleased Patch)
+
+### Bug Fixes
+
+* **cnpg-i-machinery:** Update to forked version v0.4.1 for client CA certificate fix
+* **operator:** Change parameter from `--client-cert` to `--client-ca-cert` to align with actual certificate usage
+* **deployment:** Update certificate path from `/client/tls.crt` to `/client/ca.crt` for proper CA certificate mounting
+
 ## [0.6.0](https://github.com/cloudnative-pg/plugin-barman-cloud/compare/v0.5.0...v0.6.0) (2025-08-21)
 
 

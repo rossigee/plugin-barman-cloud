@@ -142,12 +142,12 @@ func Start(ctx context.Context) error {
 	}
 
 	if err := mgr.Add(&CNPGI{
-		Client:         mgr.GetClient(),
-		PluginPath:     viper.GetString("plugin-path"),
-		ServerCertPath: viper.GetString("server-cert"),
-		ServerKeyPath:  viper.GetString("server-key"),
-		ClientCertPath: viper.GetString("client-cert"),
-		ServerAddress:  viper.GetString("server-address"),
+		Client:           mgr.GetClient(),
+		PluginPath:       viper.GetString("plugin-path"),
+		ServerCertPath:   viper.GetString("server-cert"),
+		ServerKeyPath:    viper.GetString("server-key"),
+		ClientCACertPath: viper.GetString("client-ca-cert"),
+		ServerAddress:    viper.GetString("server-address"),
 	}); err != nil {
 		setupLog.Error(err, "unable to create CNPGI runnable")
 		return err

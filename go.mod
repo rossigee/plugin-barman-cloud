@@ -129,3 +129,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.7.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
+
+replace github.com/cloudnative-pg/cnpg-i-machinery => github.com/rossigee/cnpg-i-machinery v0.4.1

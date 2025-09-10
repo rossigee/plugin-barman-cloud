@@ -1,3 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+    control-plane: controller-manager
+  name: plugin-barman-cloud-system
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -391,14 +399,6 @@ spec:
                 description: The configuration for the sidecar that runs in the instance
                   pods
                 properties:
-                  additionalContainerArgs:
-                    description: |-
-                      AdditionalContainerArgs is an optional list of command-line arguments
-                      to be passed to the sidecar container when it starts.
-                      The provided arguments are appended to the container’s default arguments.
-                    items:
-                      type: string
-                    type: array
                   env:
                     description: The environment to be explicitly passed to the sidecar
                     items:
@@ -638,3 +638,322 @@ spec:
     storage: true
     subresources:
       status: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+  name: plugin-barman-cloud-plugin-barman-cloud
+  namespace: plugin-barman-cloud-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+  name: plugin-barman-cloud-leader-election-role
+  namespace: plugin-barman-cloud-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: plugin-barman-cloud-metrics-auth-role
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - authorization.k8s.io
+  resources:
+  - subjectaccessreviews
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: plugin-barman-cloud-metrics-reader
+rules:
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+  name: plugin-barman-cloud-objectstore-editor-role
+rules:
+- apiGroups:
+  - barmancloud.cnpg.io
+  resources:
+  - objectstores
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - barmancloud.cnpg.io
+  resources:
+  - objectstores/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+  name: plugin-barman-cloud-objectstore-viewer-role
+rules:
+- apiGroups:
+  - barmancloud.cnpg.io
+  resources:
+  - objectstores
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - barmancloud.cnpg.io
+  resources:
+  - objectstores/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: plugin-barman-cloud-plugin-barman-cloud
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - watch
+- apiGroups:
+  - barmancloud.cnpg.io
+  resources:
+  - objectstores
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - barmancloud.cnpg.io
+  resources:
+  - objectstores/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - barmancloud.cnpg.io
+  resources:
+  - objectstores/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - postgresql.cnpg.io
+  resources:
+  - backups
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - postgresql.cnpg.io
+  resources:
+  - clusters/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - rolebindings
+  - roles
+  verbs:
+  - create
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+  name: plugin-barman-cloud-leader-election-rolebinding
+  namespace: plugin-barman-cloud-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: plugin-barman-cloud-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: plugin-barman-cloud
+  namespace: cnpg-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: plugin-barman-cloud-metrics-auth-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: plugin-barman-cloud-metrics-auth-role
+subjects:
+- kind: ServiceAccount
+  name: plugin-barman-cloud
+  namespace: cnpg-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+  name: plugin-barman-cloud-plugin-barman-cloud-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: plugin-barman-cloud-plugin-barman-cloud
+subjects:
+- kind: ServiceAccount
+  name: plugin-barman-cloud
+  namespace: cnpg-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+    control-plane: controller-manager
+  name: plugin-barman-cloud-controller-manager-metrics-service
+  namespace: plugin-barman-cloud-system
+spec:
+  ports:
+  - name: https
+    port: 8443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    control-plane: controller-manager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+    control-plane: controller-manager
+  name: plugin-barman-cloud-controller-manager
+  namespace: plugin-barman-cloud-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        control-plane: controller-manager
+    spec:
+      containers:
+      - args:
+        - --metrics-bind-address=:8443
+        - --leader-elect
+        - --health-probe-bind-address=:8081
+        command:
+        - /manager
+        image: plugin-barman-cloud:latest
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: plugin-barman-cloud-plugin-barman-cloud
+      terminationGracePeriodSeconds: 10

@@ -1,2 +1,0 @@
-FROM ghcr.io/rossigee/plugin-barman-cloud-sidecar:v0.6.0-patched
-COPY manager /manager

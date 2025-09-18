@@ -1,3 +1,27 @@
+# ======================================================
+# DEPRECATION NOTICE: This Makefile is deprecated
+# 
+# This project has migrated to using Task (Taskfile.yml) 
+# for build automation. The Makefile is maintained for 
+# backward compatibility but will be removed in a future 
+# version.
+#
+# Please use the following Task equivalents:
+#   make manifests     → task controller-gen
+#   make generate      → task controller-gen  
+#   make build         → task build
+#   make run           → task run
+#   make test          → task test-unit
+#   make lint          → task lint
+#   make install       → task k8s-install
+#   make deploy        → task k8s-deploy
+#   make docker-build  → task docker-build
+#
+# Install Task: https://taskfile.dev/installation/
+# ======================================================
+
+$(warning WARNING: This Makefile is deprecated. Please use 'task' instead. See Taskfile.yml)
+
 # Image URL to use all building/pushing image targets
 IMG ?= plugin-barman-cloud:latest
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
@@ -159,7 +183,7 @@ GOLANGCI_LINT = $(LOCALBIN)/golangci-lint
 
 ## Tool Versions
 KUSTOMIZE_VERSION ?= v5.4.3
-CONTROLLER_TOOLS_VERSION ?= v0.16.1
+CONTROLLER_TOOLS_VERSION ?= v0.18.0
 ENVTEST_VERSION ?= release-0.19
 GOLANGCI_LINT_VERSION ?= v1.64.8
 

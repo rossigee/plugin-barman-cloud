@@ -1,8 +1,17 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+    control-plane: controller-manager
+  name: plugin-barman-cloud-system
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.18.0
   name: objectstores.barmancloud.cnpg.io
 spec:
   group: barmancloud.cnpg.io
@@ -390,19 +399,6 @@ spec:
                 description: The configuration for the sidecar that runs in the instance
                   pods
                 properties:
-                  additionalContainerArgs:
-                    description: |-
-                      AdditionalContainerArgs is an optional list of command-line arguments
-                      to be passed to the sidecar container when it starts.
-                      The provided arguments are appended to the container’s default arguments.
-                    items:
-                      type: string
-                    type: array
-                    x-kubernetes-validations:
-                    - message: do not set --log-level in additionalContainerArgs;
-                        use spec.instanceSidecarConfiguration.logLevel
-                      reason: FieldValueForbidden
-                      rule: '!self.exists(a, a.startsWith(''--log-level''))'
                   env:
                     description: The environment to be explicitly passed to the sidecar
                     items:
@@ -410,9 +406,8 @@ spec:
                         in a Container.
                       properties:
                         name:
-                          description: |-
-                            Name of the environment variable.
-                            May consist of any printable ASCII characters except '='.
+                          description: Name of the environment variable. Must be a
+                            C_IDENTIFIER.
                           type: string
                         value:
                           description: |-
@@ -470,43 +465,6 @@ spec:
                               - fieldPath
                               type: object
                               x-kubernetes-map-type: atomic
-                            fileKeyRef:
-                              description: |-
-                                FileKeyRef selects a key of the env file.
-                                Requires the EnvFiles feature gate to be enabled.
-                              properties:
-                                key:
-                                  description: |-
-                                    The key within the env file. An invalid key will prevent the pod from starting.
-                                    The keys defined within a source may consist of any printable ASCII characters except '='.
-                                    During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
-                                  type: string
-                                optional:
-                                  default: false
-                                  description: |-
-                                    Specify whether the file or its key must be defined. If the file or key
-                                    does not exist, then the env var is not published.
-                                    If optional is set to true and the specified key does not exist,
-                                    the environment variable will not be set in the Pod's containers.
-
-                                    If optional is set to false and the specified key does not exist,
-                                    an error will be returned during Pod creation.
-                                  type: boolean
-                                path:
-                                  description: |-
-                                    The path within the volume from which to select the file.
-                                    Must be relative and may not contain the '..' path or start with '..'.
-                                  type: string
-                                volumeName:
-                                  description: The name of the volume mount containing
-                                    the env file.
-                                  type: string
-                              required:
-                              - key
-                              - path
-                              - volumeName
-                              type: object
-                              x-kubernetes-map-type: atomic
                             resourceFieldRef:
                               description: |-
                                 Selects a resource of the container: only resources limits and requests
@@ -561,17 +519,6 @@ spec:
                       - name
                       type: object
                     type: array
-                  logLevel:
-                    default: info
-                    description: 'The log level for PostgreSQL instances. Valid values
-                      are: `error`, `warning`, `info` (default), `debug`, `trace`'
-                    enum:
-                    - error
-                    - warning
-                    - info
-                    - debug
-                    - trace
-                    type: string
                   resources:
                     description: Resources define cpu/memory requests and limits for
                       the sidecar that runs in the instance pods.
@@ -581,7 +528,7 @@ spec:
                           Claims lists the names of resources, defined in spec.resourceClaims,
                           that are used by this container.
 
-                          This field depends on the
+                          This is an alpha field and requires enabling the
                           DynamicResourceAllocation feature gate.
 
                           This field is immutable. It can only be set for containers.
@@ -698,8 +645,8 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: plugin-barman-cloud
-  name: plugin-barman-cloud
-  namespace: cnpg-system
+  name: plugin-barman-cloud-plugin-barman-cloud
+  namespace: plugin-barman-cloud-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -707,8 +654,8 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: plugin-barman-cloud
-  name: leader-election-role
-  namespace: cnpg-system
+  name: plugin-barman-cloud-leader-election-role
+  namespace: plugin-barman-cloud-system
 rules:
 - apiGroups:
   - ""
@@ -745,7 +692,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: metrics-auth-role
+  name: plugin-barman-cloud-metrics-auth-role
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -763,7 +710,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: metrics-reader
+  name: plugin-barman-cloud-metrics-reader
 rules:
 - nonResourceURLs:
   - /metrics
@@ -776,7 +723,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: plugin-barman-cloud
-  name: objectstore-editor-role
+  name: plugin-barman-cloud-objectstore-editor-role
 rules:
 - apiGroups:
   - barmancloud.cnpg.io
@@ -803,7 +750,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: plugin-barman-cloud
-  name: objectstore-viewer-role
+  name: plugin-barman-cloud-objectstore-viewer-role
 rules:
 - apiGroups:
   - barmancloud.cnpg.io
@@ -823,7 +770,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: plugin-barman-cloud
+  name: plugin-barman-cloud-plugin-barman-cloud
 rules:
 - apiGroups:
   - ""
@@ -894,12 +841,12 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: plugin-barman-cloud
-  name: leader-election-rolebinding
-  namespace: cnpg-system
+  name: plugin-barman-cloud-leader-election-rolebinding
+  namespace: plugin-barman-cloud-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: leader-election-role
+  name: plugin-barman-cloud-leader-election-role
 subjects:
 - kind: ServiceAccount
   name: plugin-barman-cloud
@@ -908,11 +855,11 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: metrics-auth-rolebinding
+  name: plugin-barman-cloud-metrics-auth-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: metrics-auth-role
+  name: plugin-barman-cloud-metrics-auth-role
 subjects:
 - kind: ServiceAccount
   name: plugin-barman-cloud
@@ -924,162 +871,89 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: plugin-barman-cloud
-  name: plugin-barman-cloud-binding
+  name: plugin-barman-cloud-plugin-barman-cloud-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: plugin-barman-cloud
+  name: plugin-barman-cloud-plugin-barman-cloud
 subjects:
 - kind: ServiceAccount
   name: plugin-barman-cloud
   namespace: cnpg-system
 ---
 apiVersion: v1
-data:
-  SIDECAR_IMAGE: |
-    Z2hjci5pby9jbG91ZG5hdGl2ZS1wZy9wbHVnaW4tYmFybWFuLWNsb3VkLXNpZGVjYXItdG
-    VzdGluZzptYWlu
-kind: Secret
-metadata:
-  name: plugin-barman-cloud-8tfddg42gf
-  namespace: cnpg-system
-type: Opaque
----
-apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    cnpg.io/pluginClientSecret: barman-cloud-client-tls
-    cnpg.io/pluginPort: "9090"
-    cnpg.io/pluginServerSecret: barman-cloud-server-tls
   labels:
-    app: barman-cloud
-    cnpg.io/pluginName: barman-cloud.cloudnative-pg.io
-  name: barman-cloud
-  namespace: cnpg-system
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+    control-plane: controller-manager
+  name: plugin-barman-cloud-controller-manager-metrics-service
+  namespace: plugin-barman-cloud-system
 spec:
   ports:
-  - port: 9090
+  - name: https
+    port: 8443
     protocol: TCP
-    targetPort: 9090
+    targetPort: 8443
   selector:
-    app: barman-cloud
+    control-plane: controller-manager
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: barman-cloud
-  name: barman-cloud
-  namespace: cnpg-system
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: plugin-barman-cloud
+    control-plane: controller-manager
+  name: plugin-barman-cloud-controller-manager
+  namespace: plugin-barman-cloud-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: barman-cloud
-  strategy:
-    type: Recreate
+      control-plane: controller-manager
   template:
     metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
       labels:
-        app: barman-cloud
+        control-plane: controller-manager
     spec:
       containers:
       - args:
-        - operator
-        - --server-cert=/server/tls.crt
-        - --server-key=/server/tls.key
-        - --client-ca-cert=/client/ca.crt
-        - --server-address=:9090
+        - --metrics-bind-address=:8443
         - --leader-elect
-        - --log-level=debug
-        env:
-        - name: SIDECAR_IMAGE
-          valueFrom:
-            secretKeyRef:
-              key: SIDECAR_IMAGE
-              name: plugin-barman-cloud-8tfddg42gf
-        image: ghcr.io/rossigee/plugin-barman-cloud:v0.6.0-patched
-        name: barman-cloud
-        ports:
-        - containerPort: 9090
-          protocol: TCP
+        - --health-probe-bind-address=:8081
+        command:
+        - /manager
+        image: plugin-barman-cloud:latest
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
         readinessProbe:
-          initialDelaySeconds: 10
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
           periodSeconds: 10
-          tcpSocket:
-            port: 9090
-        resources: {}
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop:
             - ALL
-          readOnlyRootFilesystem: true
-          runAsGroup: 10001
-          runAsUser: 10001
-          seccompProfile:
-            type: RuntimeDefault
-        volumeMounts:
-        - mountPath: /server
-          name: server
-        - mountPath: /client
-          name: client
       securityContext:
         runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
-      serviceAccountName: plugin-barman-cloud
-      volumes:
-      - name: server
-        secret:
-          secretName: barman-cloud-server-tls
-      - name: client
-        secret:
-          secretName: barman-cloud-client-tls
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: barman-cloud-client
-  namespace: cnpg-system
-spec:
-  commonName: barman-cloud-client
-  duration: 2160h
-  isCA: false
-  issuerRef:
-    group: cert-manager.io
-    kind: Issuer
-    name: selfsigned-issuer
-  renewBefore: 360h
-  secretName: barman-cloud-client-tls
-  usages:
-  - client auth
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: barman-cloud-server
-  namespace: cnpg-system
-spec:
-  commonName: barman-cloud
-  dnsNames:
-  - barman-cloud
-  duration: 2160h
-  isCA: false
-  issuerRef:
-    group: cert-manager.io
-    kind: Issuer
-    name: selfsigned-issuer
-  renewBefore: 360h
-  secretName: barman-cloud-server-tls
-  usages:
-  - server auth
----
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: selfsigned-issuer
-  namespace: cnpg-system
-spec:
-  selfSigned: {}
+      serviceAccountName: plugin-barman-cloud-plugin-barman-cloud
+      terminationGracePeriodSeconds: 10

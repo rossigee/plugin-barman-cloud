@@ -1,5 +1,6 @@
 # Changelog
 
+<<<<<<< HEAD
 ## [0.7.0](https://github.com/cloudnative-pg/plugin-barman-cloud/compare/v0.6.0...v0.7.0) (2025-09-25)
 
 
@@ -22,6 +23,8 @@
 * **logs:** Log the correct name when on ObjectStore not found error ([#540](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/540)) ([a29aa1c](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/a29aa1c91af0bc7cb4a7511c49dcc461900e9a13)), closes [#539](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/539)
 * **object-cache:** Improve reliability of object cache management ([#508](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/508)) ([8c3db95](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/8c3db955efc2d23593faa0c6e410e7aa0e427ebf)), closes [#502](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/502)
 * Typo in variable name ([#515](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/515)) ([3c0d8c3](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/3c0d8c3a3394d5b628d03c849be86999b2e7887f))
+* **operator:** Change parameter from `--client-cert` to `--client-ca-cert` to align with actual certificate usage
+* **deployment:** Update certificate path from `/client/tls.crt` to `/client/ca.crt` for proper CA certificate mounting
 
 ## [0.6.0](https://github.com/cloudnative-pg/plugin-barman-cloud/compare/v0.5.0...v0.6.0) (2025-08-21)
 

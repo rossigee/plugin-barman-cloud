@@ -1,6 +1,5 @@
 # Changelog
 
-<<<<<<< HEAD
 ## [0.7.0](https://github.com/cloudnative-pg/plugin-barman-cloud/compare/v0.6.0...v0.7.0) (2025-09-25)
 
 
@@ -9,7 +8,6 @@
 * Introduce `logLevel` setting to control verbosity ([#536](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/536)) ([0501e18](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/0501e185bab4969064c5b92977747be30bd38e95))
 * Return proper gRPC error codes for expected conditions ([#549](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/549)) ([08c3f1c](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/08c3f1c2324d79d6080fbf73f11b4fa715bec4cb))
 * **spec:** Add support for additional sidecar container arguments ([#520](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/520)) ([ec352ac](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/ec352ac0fdd31656321e564bcf6a026481ec06e4))
-
 
 ### Bug Fixes
 

@@ -441,9 +441,33 @@ func reconcilePodSpec(
 				},
 			},
 		})
+
+		// Also mount barman-certificates in the main postgres container
+		for i := range spec.Containers {
+			if spec.Containers[i].Name == mainContainerName {
+				spec.Containers[i].VolumeMounts = ensureVolumeMount(
+					spec.Containers[i].VolumeMounts,
+					corev1.VolumeMount{
+						Name:      barmanCertificatesVolumeName,
+						MountPath: metadata.BarmanCertificatesPath,
+						ReadOnly:  true,
+					},
+				)
+			}
+		}
 	} else {
 		sidecarTemplate.VolumeMounts = removeVolumeMount(sidecarTemplate.VolumeMounts, barmanCertificatesVolumeName)
 		spec.Volumes = removeVolume(spec.Volumes, barmanCertificatesVolumeName)
+
+		// Also remove from main container
+		for i := range spec.Containers {
+			if spec.Containers[i].Name == mainContainerName {
+				spec.Containers[i].VolumeMounts = removeVolumeMount(
+					spec.Containers[i].VolumeMounts,
+					barmanCertificatesVolumeName,
+				)
+			}
+		}
 	}
 
 	if err := injectPluginSidecarPodSpec(spec, &sidecarTemplate, mainContainerName); err != nil {

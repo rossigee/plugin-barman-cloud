@@ -22,7 +22,7 @@ spec:
           type: RuntimeDefault
       serviceAccountName: plugin-barman-cloud
       containers:
-      - image: ghcr.io/rossigee/plugin-barman-cloud:v0.6.0-patched
+      - image: plugin-barman-cloud:latest
         name: barman-cloud
         ports:
         - containerPort: 9090

@@ -54,6 +54,10 @@ type InstanceSidecarConfiguration struct {
 
 // ObjectStoreSpec defines the desired state of ObjectStore.
 type ObjectStoreSpec struct {
+	// The cluster that this ObjectStore is associated with
+	// +optional
+	Cluster corev1.LocalObjectReference `json:"cluster,omitempty"`
+
 	// The configuration for the barman-cloud tool suite
 	// +kubebuilder:validation:XValidation:rule="!has(self.serverName)",fieldPath=".serverName",reason="FieldValueForbidden",message="use the 'serverName' plugin parameter in the Cluster resource"
 	Configuration barmanapi.BarmanObjectStoreConfiguration `json:"configuration"`

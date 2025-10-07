@@ -21,6 +21,9 @@ import (
 	"fmt"
 
 	"github.com/cloudnative-pg/machinery/pkg/log"
+	rbacv1 "k8s.io/api/rbac/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -45,19 +48,53 @@ type ObjectStoreReconciler struct {
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the ObjectStore object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
-// For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.0/pkg/reconcile
-func (r *ObjectStoreReconciler) Reconcile(ctx context.Context, _ ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+func (r *ObjectStoreReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	logger := log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	var objectStore barmancloudv1.ObjectStore
+	if err := r.Get(ctx, req.NamespacedName, &objectStore); err != nil {
+		if errors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
+
+	if err := r.reconcileRoleBinding(ctx, &objectStore); err != nil {
+		logger.Error(err, "failed to reconcile role binding")
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
+}
+
+func (r *ObjectStoreReconciler) reconcileRoleBinding(ctx context.Context, objectStore *barmancloudv1.ObjectStore) error {
+	binding := &rbacv1.RoleBinding{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      fmt.Sprintf("plugin-barman-cloud-%s", objectStore.Spec.Cluster.Name),
+			Namespace: objectStore.Namespace,
+		},
+		RoleRef: rbacv1.RoleRef{
+			APIGroup: rbacv1.GroupName,
+			Kind:     "ClusterRole",
+			Name:     "plugin-barman-cloud",
+		},
+		Subjects: []rbacv1.Subject{
+			{
+				Kind:      rbacv1.ServiceAccountKind,
+				Name:      objectStore.Spec.Cluster.Name,
+				Namespace: objectStore.Namespace,
+			},
+		},
+	}
+
+	if err := ctrl.SetControllerReference(objectStore, binding, r.Scheme); err != nil {
+		return err
+	}
+
+	_, err := ctrl.CreateOrUpdate(ctx, r.Client, binding, func() error {
+		return nil
+	})
+	return err
 }
 
 // SetupWithManager sets up the controller with the Manager.

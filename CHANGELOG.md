@@ -40,6 +40,7 @@
 * Return proper gRPC error codes for expected conditions ([#549](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/549)) ([08c3f1c](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/08c3f1c2324d79d6080fbf73f11b4fa715bec4cb))
 * **spec:** Add support for additional sidecar container arguments ([#520](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/520)) ([ec352ac](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/ec352ac0fdd31656321e564bcf6a026481ec06e4))
 
+
 ### Bug Fixes
 
 * Avoid panicking if serverRecoveryWindow has still not been set ([#525](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/525)) ([dfd9861](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/dfd9861a3f9296bffe084a81faa8755ddca95149)), closes [#523](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/523)
@@ -52,8 +53,6 @@
 * **logs:** Log the correct name when on ObjectStore not found error ([#540](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/540)) ([a29aa1c](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/a29aa1c91af0bc7cb4a7511c49dcc461900e9a13)), closes [#539](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/539)
 * **object-cache:** Improve reliability of object cache management ([#508](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/508)) ([8c3db95](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/8c3db955efc2d23593faa0c6e410e7aa0e427ebf)), closes [#502](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/502)
 * Typo in variable name ([#515](https://github.com/cloudnative-pg/plugin-barman-cloud/issues/515)) ([3c0d8c3](https://github.com/cloudnative-pg/plugin-barman-cloud/commit/3c0d8c3a3394d5b628d03c849be86999b2e7887f))
-* **operator:** Change parameter from `--client-cert` to `--client-ca-cert` to align with actual certificate usage
-* **deployment:** Update certificate path from `/client/tls.crt` to `/client/ca.crt` for proper CA certificate mounting
 
 ## [0.6.0](https://github.com/cloudnative-pg/plugin-barman-cloud/compare/v0.5.0...v0.6.0) (2025-08-21)
 

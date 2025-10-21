@@ -37,7 +37,7 @@ spec:
         - operator
         - --server-cert=/server/tls.crt
         - --server-key=/server/tls.key
-        - --client-ca-cert=/client/ca.crt
+        - --client-cert=/client/tls.crt
         - --server-address=:9090
         - --leader-elect
         - --log-level=debug

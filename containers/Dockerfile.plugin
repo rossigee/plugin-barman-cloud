@@ -28,7 +28,8 @@ RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache
     CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager cmd/manager/main.go
 
 # Use a minimal base image to package the manager binary
-FROM registry.access.redhat.com/ubi9/ubi-minimal
+# Refer to https://www.redhat.com/en/blog/introduction-ubi-micro for more details
+FROM registry.access.redhat.com/ubi9/ubi-micro
 
 ENV SUMMARY="CloudNativePG Barman plugin" \
     DESCRIPTION="Container image that provides the barman-cloud plugin"
@@ -45,11 +46,6 @@ LABEL summary="$SUMMARY" \
 
 WORKDIR /
 COPY --from=gobuilder /workspace/manager .
-
-RUN microdnf install -y python3 pip && \
-    pip install --no-cache-dir barman[azure,cloud,google,snappy,zstandard,lz4]==3.15.0 && \
-    microdnf clean all
-
 USER 65532:65532
 
 ENTRYPOINT ["/manager"]

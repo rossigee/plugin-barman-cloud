@@ -124,6 +124,10 @@ func (w WALServiceImplementation) Archive(
 		return nil, err
 	}
 
+	// Add CA bundle environment variables if endpointCA is configured
+	caBundleEnv := GetRestoreCABundleEnv(&objectStore.Spec.Configuration)
+	envArchive = MergeEnv(envArchive, caBundleEnv)
+
 	emptyWalArchiveFile := path.Join(w.PGDataPath, metadata.CheckEmptyWalArchiveFile)
 	arch, err := archiver.New(
 		ctx,

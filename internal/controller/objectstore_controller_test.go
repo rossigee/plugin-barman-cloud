@@ -20,6 +20,7 @@ import (
 	"context"
 
 	barmanapi "github.com/cloudnative-pg/barman-cloud/pkg/api"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -53,9 +54,9 @@ var _ = Describe("ObjectStore Controller", func() {
 						Namespace: "default",
 					},
 					Spec: barmancloudv1.ObjectStoreSpec{
+						Cluster:       corev1.LocalObjectReference{Name: "test-cluster"},
 						Configuration: barmanapi.BarmanObjectStoreConfiguration{DestinationPath: "/tmp"},
 					},
-					// TODO(user): Specify other spec details if needed.
 				}
 				Expect(k8sClient.Create(ctx, resource)).To(Succeed())
 			}

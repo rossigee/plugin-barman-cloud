@@ -69,11 +69,11 @@ func NewCmd() *cobra.Command {
 	_ = viper.BindPFlag("server-key", cmd.Flags().Lookup("server-key"))
 
 	cmd.Flags().String(
-		"client-cert",
+		"client-ca-cert",
 		"",
-		"The client public key to verify the connection",
+		"The client CA certificate to verify the connection",
 	)
-	_ = viper.BindPFlag("client-cert", cmd.Flags().Lookup("client-cert"))
+	_ = viper.BindPFlag("client-ca-cert", cmd.Flags().Lookup("client-ca-cert"))
 
 	cmd.Flags().String(
 		"server-address",

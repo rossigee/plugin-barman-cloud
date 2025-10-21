@@ -64,6 +64,9 @@ linters:
           - revive
         path: internal/cnpgi/common/
         text: avoid meaningless package names
+      - linters:
+          - gomoddirectives
+        text: replacement are not allowed
     paths:
       - zz_generated.*
       - internal/operator/controller/suite_test.go

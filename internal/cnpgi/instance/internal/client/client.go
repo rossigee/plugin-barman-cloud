@@ -116,7 +116,7 @@ func (e *ExtendedClient) getCachedObject(
 	}
 
 	if err := e.Client.Get(ctx, key, obj, opts...); err != nil {
-		return err
+		return fmt.Errorf("while getting %T %s/%s: %w", obj, key.Namespace, key.Name, err)
 	}
 
 	cs := cachedEntry{

@@ -24,8 +24,6 @@ github.com/cloudnative-pg/cloudnative-pg v1.27.0 h1:mp0zlYO4vKAJmQdArWORWKr1lmB4
 github.com/cloudnative-pg/cloudnative-pg v1.27.0/go.mod h1:aIVMy0BrfXg+eJuA/ZyRGyOQtPtshw/sCzQnQn3KFUo=
 github.com/cloudnative-pg/cnpg-i v0.3.0 h1:5ayNOG5x68lU70IVbHDZQrv5p+bErCJ0mqRmOpW2jjE=
 github.com/cloudnative-pg/cnpg-i v0.3.0/go.mod h1:VOIWWXcJ1RyioK+elR2DGOa4cBA6K+6UQgx05aZmH+g=
-github.com/cloudnative-pg/cnpg-i-machinery v0.4.1 h1:M4ELhZO0e7UjiV3PZ3uGJOz3SgG/3ThWiqkbrFCcXNE=
-github.com/cloudnative-pg/cnpg-i-machinery v0.4.1/go.mod h1:TxwoMgQINOJkS1kepudqCBTYd8QYev6JoT8R52pYD4E=
 github.com/cloudnative-pg/machinery v0.3.1 h1:KtPA6EwELTUNisCMLiFYkK83GU9606rkGQhDJGPB8Yw=
 github.com/cloudnative-pg/machinery v0.3.1/go.mod h1:jebuqKxZAbrRKDEEpVCIDMKW+FbWtB9Kf/hb2kMUu9o=
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
@@ -168,6 +166,8 @@ github.com/prometheus/procfs v0.16.1 h1:hZ15bTNuirocR6u0JZ6BAHHmwS1p8B4P6MRqxtzM
 github.com/prometheus/procfs v0.16.1/go.mod h1:teAbpZRB1iIAJYREa1LsoWUXykVXA1KlTmWl8x/U+Is=
 github.com/rogpeppe/go-internal v1.13.1 h1:KvO1DLK/DRN07sQ1LQKScxyZJuNnedQ5/wKSR38lUII=
 github.com/rogpeppe/go-internal v1.13.1/go.mod h1:uMEvuHeurkdAXX61udpOXGD/AzZDWNMNyH2VO9fmH0o=
+github.com/rossigee/cnpg-i-machinery v0.4.1 h1:3S5ts0xeqQ0Q3mGCykP0CPQRZgkSn/j+oexSXzCZMFw=
+github.com/rossigee/cnpg-i-machinery v0.4.1/go.mod h1:vB7lxOvUUGLYnZT8/+w7ReRQ31Yt9odUSXUZ7HvwJJ8=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/sagikazarmark/locafero v0.11.0 h1:1iurJgmM9G3PA/I+wWYIOw/5SyBtxapeHDcg+AAIFXc=
 github.com/sagikazarmark/locafero v0.11.0/go.mod h1:nVIGvgyzw595SUSUE6tvCp3YYTeHs15MvlmU87WwIik=

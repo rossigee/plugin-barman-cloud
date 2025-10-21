@@ -31,12 +31,12 @@ import (
 
 // CNPGI is the implementation of the CNPG-i server
 type CNPGI struct {
-	Client         client.Client
-	PluginPath     string
-	ServerCertPath string
-	ServerKeyPath  string
-	ClientCertPath string
-	ServerAddress  string
+	Client           client.Client
+	PluginPath       string
+	ServerCertPath   string
+	ServerKeyPath    string
+	ClientCACertPath string
+	ServerAddress    string
 }
 
 // Start starts the GRPC server
@@ -53,13 +53,13 @@ func (c *CNPGI) Start(ctx context.Context) error {
 	}
 
 	srv := http.Server{
-		IdentityImpl:   IdentityImplementation{},
-		Enrichers:      []http.ServerEnricher{enrich},
-		PluginPath:     c.PluginPath,
-		ServerCertPath: c.ServerCertPath,
-		ServerKeyPath:  c.ServerKeyPath,
-		ClientCertPath: c.ClientCertPath,
-		ServerAddress:  c.ServerAddress,
+		IdentityImpl:     IdentityImplementation{},
+		Enrichers:        []http.ServerEnricher{enrich},
+		PluginPath:       c.PluginPath,
+		ServerCertPath:   c.ServerCertPath,
+		ServerKeyPath:    c.ServerKeyPath,
+		ClientCACertPath: c.ClientCACertPath,
+		ServerAddress:    c.ServerAddress,
 	}
 
 	return srv.Start(ctx)

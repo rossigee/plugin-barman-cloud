@@ -22,6 +22,10 @@ package certmanager
 import (
 	"context"
 	"fmt"
+	"net"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	types2 "k8s.io/apimachinery/pkg/types"
@@ -60,6 +64,35 @@ func WithIgnoreExistingResources(ignore bool) InstallOption {
 // DefaultVersion is the default version of cert-manager to install.
 const DefaultVersion = "v1.15.1"
 
+// isNetworkAvailable checks if network connectivity to github.com is available.
+func isNetworkAvailable() bool {
+	conn, err := net.DialTimeout("tcp", "github.com:443", 5*time.Second)
+	if err != nil {
+		return false
+	}
+	defer conn.Close()
+	return true
+}
+
+// getLocalManifestPath returns the path to local cert-manager manifests if they exist.
+func getLocalManifestPath(version string) (string, bool) {
+	// Try to find local manifest file
+	possiblePaths := []string{
+		fmt.Sprintf("test/e2e/manifests/cert-manager-%s.yaml", version),
+		fmt.Sprintf("test/e2e/manifests/cert-manager.yaml"),
+		fmt.Sprintf("manifests/cert-manager-%s.yaml", version),
+		fmt.Sprintf("manifests/cert-manager.yaml"),
+	}
+
+	for _, path := range possiblePaths {
+		if _, err := os.Stat(path); err == nil {
+			absPath, _ := filepath.Abs(path)
+			return absPath, true
+		}
+	}
+	return "", false
+}
+
 // Install installs cert-manager using kubectl.
 func Install(ctx context.Context, cl client.Client, opts ...InstallOption) error {
 	options := &InstallOptions{
@@ -71,13 +104,29 @@ func Install(ctx context.Context, cl client.Client, opts ...InstallOption) error
 		opt(options)
 	}
 
-	// Define the KustomizationResourceURL for the cert-manager manifests
-	url := fmt.Sprintf("https://github.com/cert-manager/cert-manager/releases/download/%s/cert-manager.yaml",
-		options.Version)
+	var kustomization *types.Kustomization
 
-	// Generate the Kustomization
-	kustomization := &types.Kustomization{
-		Resources: []string{url},
+	// Check if we can use local manifests or need to skip installation
+	if localPath, exists := getLocalManifestPath(options.Version); exists {
+		// Use local manifest file
+		kustomization = &types.Kustomization{
+			Resources: []string{localPath},
+		}
+	} else if isNetworkAvailable() {
+		// Use remote URL if network is available
+		url := fmt.Sprintf("https://github.com/cert-manager/cert-manager/releases/download/%s/cert-manager.yaml",
+			options.Version)
+		kustomization = &types.Kustomization{
+			Resources: []string{url},
+		}
+	} else {
+		// Skip cert-manager installation if no network and no local manifests
+		if os.Getenv("E2E_SKIP_CERT_MANAGER") == "true" || strings.Contains(os.Getenv("E2E_OFFLINE"), "true") {
+			fmt.Printf("Warning: Skipping cert-manager installation due to network unavailability\n")
+			return nil
+		}
+		return fmt.Errorf("cert-manager installation failed: no network connectivity and no local manifests found. " +
+			"Set E2E_SKIP_CERT_MANAGER=true to skip cert-manager installation in offline environments")
 	}
 
 	// Add all the resources defined in the cert-manager manifests
